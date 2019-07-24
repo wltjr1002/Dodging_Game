@@ -25,7 +25,6 @@
             
             for (int i = 0; i < numMaxObject; i++)
             {
-                Debug.Log("new bullet"+i);
                 GameObject newBullet = Instantiate(bullet, Vector3.zero, Quaternion.identity, transform);
                 inactiveBullets.Add(newBullet);
                 newBullet.SetActive(false);
