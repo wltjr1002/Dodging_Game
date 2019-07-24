@@ -18,6 +18,10 @@
         private Slider sensitivity;
         //public Dictionary<string, Text> textBoxes;
         // Start is called before the first frame update
+        public void Initialize()
+        {
+            
+        }
         public void SetText(string name, string content)
         {
             int index = textBoxes.FindIndex(item => {return item.name == name;});

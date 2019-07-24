@@ -60,5 +60,10 @@
                 inactiveBullets.Add(bullet);
             }
         }
+
+        public bool isBulletInPosition(Vector2 position)
+        {
+            return false;
+        }
     }
 }

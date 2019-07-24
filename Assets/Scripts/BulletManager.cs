@@ -14,8 +14,12 @@
         public void Initialize()
         {
             bulletPool = Instantiate(bulletPoolObject,Vector3.zero,Quaternion.identity,transform).GetComponent<BulletPool>();
-            Debug.Log(maxBullets);
             bulletPool.Initialize(maxBullets);
+        }
+
+        public bool isBulletInPosition(Vector2 position)
+        {
+            return bulletPool.isBulletInPosition(position);
         }
 
         public void MakeBullet()

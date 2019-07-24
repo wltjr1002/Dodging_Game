@@ -7,16 +7,17 @@
     public class Player : MonoBehaviour
     {
         public float speed;
-        private float width;
-        private float height;
+        private Vector2 playerSize;
+        private Vector2 screenSize;
+
     
         public void Initialize()
         {
             speed = 4;
             
             Sprite sprite = GetComponent<SpriteRenderer>().sprite;
-            width =  sprite.rect.size.x;
-            height =  sprite.rect.size.y;
+
+            playerSize = sprite.rect.size;
         }
         
         public void Move(KeyDowns keys)
@@ -27,10 +28,15 @@
             float curVelocity = FindObjectOfType<GameManager>().uiManager.GetSliderValue();
             float dt = Time.deltaTime;
             float ds = curVelocity * dt;
-            //Vector3 dsVector = new Vector3(dirX * dt * curVelocity, dirY * dt * curVelocity, 0);
-            Vector3 dsVector = Vector3.Scale(Input.acceleration, new Vector3(ds, ds, 0));
+            Vector3 dsVector = new Vector3(dirX * dt * curVelocity, dirY * dt * curVelocity, 0);
+            //Vector3 dsVector = Vector3.Scale(Input.acceleration, new Vector3(ds, ds, 0));
 
             transform.localPosition = ClampPosition(transform.localPosition + dsVector);
+        }
+
+        public void ResetPostion()
+        {
+            transform.localPosition = Vector3.zero;
         }
 
         private Vector3 ClampPosition(Vector3 position)

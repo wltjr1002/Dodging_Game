@@ -12,10 +12,6 @@ public class Gyroscope : MonoBehaviour
     }
    
     void Update() {
-        Vector3 pos = transform.position;
-        Vector3 acc = Input.gyro.userAcceleration;
-        Vector3 acc2 = Input.acceleration;
         transform.localPosition = Vector3.Scale(Input.acceleration, new Vector3(3,5,0));
-        gameManager.uiManager.SetText("Debug",acc.ToString()+acc2.ToString());
     }
 }
