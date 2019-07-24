@@ -18,6 +18,10 @@
             Sprite sprite = GetComponent<SpriteRenderer>().sprite;
 
             playerSize = sprite.rect.size;
+
+            Camera camera = FindObjectOfType<Camera>();
+            screenSize = camera.ViewportToWorldPoint(new Vector3(1,1,0));
+            Debug.Log(screenSize.ToString());
         }
         
         public void Move(KeyDowns keys)
@@ -43,8 +47,8 @@
         {
             //float x = Mathf.Clamp(position.x, -3f+width/2f, 3f-width/2f);
             //float y = Mathf.Clamp(position.y, -5f+height/2f, 5f-height/2f);
-            float x = Mathf.Clamp(position.x, -3f, 3f);
-            float y = Mathf.Clamp(position.y, -5f, 5f);
+            float x = Mathf.Clamp(position.x, -screenSize.x, screenSize.x);
+            float y = Mathf.Clamp(position.y, -screenSize.y, screenSize.y);
             float z = position.z;
             Vector3 clampedPosition = new Vector3(x, y, z);
             return clampedPosition;

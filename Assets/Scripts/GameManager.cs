@@ -24,8 +24,9 @@
 
     public class GameManager : MonoBehaviour
     {
-        public BulletManager bulletManager;
         public Player player;
+        public BulletManager bulletManager;
+        public EnemyManager enemyManager;
         public UIManager uiManager;
         private const float UI_UPDATE_FREQENCY = 0.2f;
         private float lastUIUpdate;
@@ -39,6 +40,7 @@
         {
             player = FindObjectOfType<Player>();
             bulletManager = FindObjectOfType<BulletManager>();
+            enemyManager = FindObjectOfType<EnemyManager>();
             uiManager = FindObjectOfType<UIManager>();
             lastUIUpdate = float.MinValue;
 
@@ -61,6 +63,7 @@
             {
                 // gameOver 처리
                 player.ResetPostion();
+                bulletManager.DestroyAllBullet();
             }
 
             SetUIs();
@@ -70,6 +73,7 @@
         {
             player.Initialize();
             bulletManager.Initialize();
+            enemyManager.Initialize();
             uiManager.Initialize();
         }
 
@@ -86,7 +90,7 @@
 
         private void Makebullets()
         {
-            bulletManager.MakeCircleBullet(20);
+            bulletManager.MakeCircleBullet(Vector3.zero,20);
         }
 
         private void SetUIs()

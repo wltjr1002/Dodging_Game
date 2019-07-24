@@ -6,6 +6,7 @@
 
     public class Bullet : MonoBehaviour
     {
+        public BulletPool bulletPool;
         private Vector3 _direction;
         private float _speed;
         public void Initialize(Vector3 direction, float speed)
@@ -23,7 +24,7 @@
             Vector3 newPosition = position + _direction * (_speed * Time.deltaTime);
             if (Mathf.Abs(newPosition.x) > 5 || Mathf.Abs(newPosition.y) > 10)
             {
-                FindObjectOfType<BulletPool>().GetBackObject(gameObject);
+                bulletPool.GetBackObject(gameObject);
                 return;
             }
             transform.localPosition = newPosition;

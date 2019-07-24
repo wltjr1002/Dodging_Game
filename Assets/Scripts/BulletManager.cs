@@ -22,6 +22,11 @@
             return bulletPool.isBulletInPosition(position);
         }
 
+        public void DestroyAllBullet()
+        {
+            bulletPool.DestroyAllBullet();
+        }
+
         public void MakeBullet()
         {
             Bullet newBullet = bulletPool.GetObject().GetComponent<Bullet>();
@@ -38,9 +43,9 @@
             newBullet.Initialize(direction, 2f);
         }
 
-        public void MakeCircleBullet(int n)
+        public void MakeCircleBullet(Vector3 position, int n)
         {
-            Vector3 circleCenter = new Vector3(Random.Range(-2f,2f),Random.Range(-5f,5f),0);
+            Vector3 circleCenter = position;
             for(int i = 0; i<n; i++)
             {
                 float angle = Mathf.PI * 2 * i / n;
