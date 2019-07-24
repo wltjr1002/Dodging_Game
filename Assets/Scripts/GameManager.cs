@@ -3,7 +3,6 @@
     using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
-    using UnityEditor;
 
     public struct KeyDowns
     {
@@ -90,7 +89,7 @@
 
         private void Makebullets()
         {
-            bulletManager.MakeCircleBullet(Vector3.zero,20);
+            bulletManager.MakeCircleBullet(Vector3.zero,0.5f,20);
         }
 
         private void SetUIs()
@@ -114,20 +113,6 @@
 
             KeyDowns keyDowns = new KeyDowns(up, down, right, left, shift, space);
             return keyDowns;
-        }
-
-
-        [MenuItem("Util/CleanCache")]
-        public static void CleanCache()
-        {
-            if (Caching.ClearCache())
-            {
-                EditorUtility.DisplayDialog("알림", "캐시가 삭제되었습니다.", "확인");
-            }
-            else
-            {
-                EditorUtility.DisplayDialog("오류", "캐시 삭제에 실패했습니다.", "확인");
-            }
         }
     }
 }

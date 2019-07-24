@@ -6,10 +6,11 @@
 
     public class Player : MonoBehaviour
     {
+        [SerializeField]
+        private GameObject hitPoint;
         public float speed;
         private Vector2 playerSize;
         private Vector2 screenSize;
-
     
         public void Initialize()
         {
@@ -28,14 +29,15 @@
         {
             int dirX = (keys.right == keys.left) ? 0 : (keys.right ? 1 : -1);
             int dirY = (keys.up == keys.down) ? 0 : (keys.up ? 1 : -1);
-            //float curVelocity = keys.shift ? (speed*0.5f) : speed;
             float curVelocity = FindObjectOfType<GameManager>().uiManager.GetSliderValue();
+            curVelocity = keys.shift ? (curVelocity*0.5f) : curVelocity;
             float dt = Time.deltaTime;
             float ds = curVelocity * dt;
             Vector3 dsVector = new Vector3(dirX * dt * curVelocity, dirY * dt * curVelocity, 0);
             //Vector3 dsVector = Vector3.Scale(Input.acceleration, new Vector3(ds, ds, 0));
 
             transform.localPosition = ClampPosition(transform.localPosition + dsVector);
+            hitPoint.SetActive(keys.shift);
         }
 
         public void ResetPostion()

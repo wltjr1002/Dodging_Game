@@ -6,14 +6,17 @@
 
     public class BulletManager : MonoBehaviour
     {
-        private int maxBullets = 200;
-
+        private int maxBullets = 500;
+        [SerializeField]
+        private Sprite[] bulletSprites;
+        private Sprite bulletSprite;
+        public Sprite defaultBulletSprite;
         [SerializeField]
         private GameObject bulletPoolObject;
         private BulletPool bulletPool;
         public void Initialize()
         {
-            bulletPool = Instantiate(bulletPoolObject,Vector3.zero,Quaternion.identity,transform).GetComponent<BulletPool>();
+            bulletPool = Instantiate(bulletPoolObject, Vector3.zero, Quaternion.identity, transform).GetComponent<BulletPool>();
             bulletPool.Initialize(maxBullets);
         }
 
@@ -27,31 +30,46 @@
             bulletPool.DestroyAllBullet();
         }
 
-        public void MakeBullet()
-        {
-            Bullet newBullet = bulletPool.GetObject().GetComponent<Bullet>();
-            newBullet.transform.localPosition = new Vector3(Random.Range(-2f,2f),Random.Range(-5f,5f),0);
-            float angle = Random.Range(0,2*Mathf.PI);
-            Vector3 direction = new Vector3(Mathf.Cos(angle),Mathf.Sin(angle),0);
-            newBullet.Initialize(direction, 2f);
-        }
-
-        public void MakeBullet(Vector3 position, Vector3 direction)
+        public void MakeBullet(Vector3 position, Vector3 direction, float speed, BulletType bulletType = BulletType.Linear)
         {
             Bullet newBullet = bulletPool.GetObject().GetComponent<Bullet>();
             newBullet.transform.localPosition = position;
-            newBullet.Initialize(direction, 2f);
+            newBullet.Initialize(bulletType, position, direction, speed);
+            newBullet.GetComponent<SpriteRenderer>().sprite = bulletSprite;
         }
 
-        public void MakeCircleBullet(Vector3 position, int n)
+        public void MakeBullet(Vector3 position, Vector3 initPosition, Vector3 direction, float speed, BulletType bulletType = BulletType.Linear)
         {
-            Vector3 circleCenter = position;
-            for(int i = 0; i<n; i++)
+            Bullet newBullet = bulletPool.GetObject().GetComponent<Bullet>();
+            newBullet.transform.localPosition = position;
+            newBullet.Initialize(bulletType, initPosition, direction, speed);
+            newBullet.GetComponent<SpriteRenderer>().sprite = bulletSprite;
+        }
+
+        public void MakeCircleBullet(Vector3 position, float radius, int n, float speed = 2f, BulletType bulletType = BulletType.Linear)
+        {
+            for (int i = 0; i < n; i++)
             {
                 float angle = Mathf.PI * 2 * i / n;
-                Vector3 direction = new Vector3(Mathf.Cos(angle),Mathf.Sin(angle),0);
-                MakeBullet(circleCenter,direction);
+                Vector3 direction = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0);
+                MakeBullet(position, position + direction * radius, direction, speed, bulletType);
             }
+        }
+
+        public void MakeCircleBullet(Vector3 position, float radius, int n, float angleOffset, float angleStart = 0, float angleEnd = 360, float speed = 2f, BulletType bulletType = BulletType.Linear)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                float angle = Mathf.Deg2Rad*(angleOffset + angleStart + (angleEnd - angleStart) * i / (n-1));
+                Vector3 direction = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0);
+                MakeBullet(position, position + direction * radius, direction, speed, bulletType);
+            }
+        }
+
+        public void ChangeBulletSprite(int spriteIdx)
+        {
+            if (bulletSprites.Length == 0) bulletSprite = defaultBulletSprite;
+            bulletSprite = bulletSprites[spriteIdx%bulletSprites.Length];
         }
 
     }

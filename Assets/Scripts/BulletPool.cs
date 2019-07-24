@@ -46,6 +46,7 @@
             else
             {
                 newBullet = Instantiate(bullet, Vector3.zero, Quaternion.identity, transform);
+                newBullet.GetComponent<Bullet>().bulletPool = this;
                 activeBullets.Add(newBullet);
             }
             newBullet.SetActive(true);
