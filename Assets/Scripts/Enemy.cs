@@ -19,19 +19,19 @@
             {
                 case BulletType.Linear:
                     {
-                        bulletManager.MakeCircleBullet(transform.localPosition, 0.1f, 36, angleOffset, 0, 360, 2, bulletType);
+                        bulletManager.MakeCircleBullet(transform.localPosition, 0.1f, 12, angleOffset, 0, 360, 2, bulletType);
                         break;
                     }
                 case BulletType.Homing:
                 case BulletType.Random:
                     {
-                        bulletManager.MakeCircleBullet(transform.localPosition, 0.1f, 30, 3, bulletType);
+                        bulletManager.MakeCircleBullet(transform.localPosition, 0.1f, 10, 3, bulletType);
                         break;
                     }
                 case BulletType.Spiral:
                 default:
                     {
-                        bulletManager.MakeCircleBullet(transform.localPosition, 0.1f, 30, -angleOffset, 0, 360, 1, bulletType);
+                        bulletManager.MakeCircleBullet(transform.localPosition, 0.1f, 10, -angleOffset, 0, 360, 2, bulletType);
                         break;
                     }
             }
@@ -42,10 +42,10 @@
         {
             BulletType bulletType = (BulletType)Random.Range(0, 3);
             yield return new WaitForSeconds(1f);
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 3; i++)
             {
                 yield return new WaitForSeconds(0.2f);
-                ShootBullet(bulletType, 5 * i);
+                ShootBullet(bulletType, 15 * i);
             }
             Destroy(gameObject);
         }

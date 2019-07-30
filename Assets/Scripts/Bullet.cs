@@ -15,6 +15,8 @@
     public class Bullet : MonoBehaviour
     {
         public BulletPool bulletPool;
+        public float width;
+        public float height;
         private BulletType _bulletType;
         private Vector3 _Pinit;
         private Vector3 _Pnow;
@@ -22,7 +24,8 @@
         private Vector3 _Vnow;
         private float _speed;
         private float _curl;
-        public void Initialize(BulletType type, Vector3 Position, Vector3 direction, float speed, float curl = 0.5f)
+
+        public void Initialize(BulletType type, Vector3 Position, Vector3 direction, float speed, float curl = 0.7f)
         {
             _bulletType = type;
             _Pinit = Position;
@@ -35,6 +38,7 @@
             _speed = speed;
             _curl = curl;
         }
+
         void Update()
         {
             // 방향벡터 계산
@@ -64,12 +68,11 @@
             {
                 try
                 {
-                    bulletPool.GetBackObject(gameObject);
+                    bulletPool.GetBackObject(this);
                 }
                 catch (System.Exception)
                 {
                     Debug.Log(gameObject.transform.localPosition);
-
                     throw;
                 }
                 return;

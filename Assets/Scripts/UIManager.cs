@@ -25,7 +25,6 @@
         public void SetText(string name, string content)
         {
             int index = textBoxes.FindIndex(item => {return item.name == name;});
-            Debug.Log(index);
             if ((index != -1))
             {
                 textBoxes[index].texbox.text = content;

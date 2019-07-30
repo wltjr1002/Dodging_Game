@@ -15,3 +15,4 @@ public class Gyroscope : MonoBehaviour
         transform.localPosition = Vector3.Scale(Input.acceleration, new Vector3(3,5,0));
     }
 }
+ 

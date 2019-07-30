@@ -29,6 +29,8 @@
         public UIManager uiManager;
         private const float UI_UPDATE_FREQENCY = 0.2f;
         private float lastUIUpdate;
+        [SerializeField]
+        private float sensitivity;
         void Awake()
         {
             int width = Screen.width;
@@ -44,6 +46,7 @@
             lastUIUpdate = float.MinValue;
 
             InitializeComponents();
+            StartCoroutine(Makebullets());
         }
 
         // Update is called once per frame
@@ -53,7 +56,7 @@
             KeyDowns keyDowns = GetKeyDowns();
 
             // bullet 생성
-            if (keyDowns.space) Makebullets();
+            //if (keyDowns.space) Makebullets();
 
             // player 이동
             MovePlayer(keyDowns);
@@ -66,6 +69,8 @@
             }
 
             SetUIs();
+
+            
         }
 
         void InitializeComponents()
@@ -87,9 +92,11 @@
             return bulletManager.isBulletInPosition(playerPosition);
         }
 
-        private void Makebullets()
+        private IEnumerator Makebullets()
         {
-            bulletManager.MakeCircleBullet(Vector3.zero,0.5f,20);
+            bulletManager.ChangeBulletSprite(0);
+            bulletManager.MakeBullet(new Vector3(-3,player.transform.localPosition.y,0),Vector3.right,2);
+            yield return new WaitForSeconds(1.0f);
         }
 
         private void SetUIs()
@@ -104,10 +111,10 @@
         {
             bool up, down, right, left, shift, space;
 
-            up = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.acceleration.y > 0.2f;
-            down = Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow) || Input.acceleration.y < -0.2f;
-            right = Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) || Input.acceleration.x > 0.2f;
-            left = Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || Input.acceleration.x < -0.2f;
+            up = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.acceleration.y > sensitivity;
+            down = Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow) || Input.acceleration.y < -sensitivity;
+            right = Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) || Input.acceleration.x > sensitivity;
+            left = Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || Input.acceleration.x < -sensitivity;
             shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || Input.GetKey(KeyCode.Mouse0);
             space = Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Mouse0);
 

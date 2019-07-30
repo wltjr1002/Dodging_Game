@@ -72,6 +72,11 @@
             bulletSprite = bulletSprites[spriteIdx%bulletSprites.Length];
         }
 
+        public void drawMesh()
+        {
+            
+        }
+
     }
 
 }

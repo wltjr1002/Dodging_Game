@@ -8,15 +8,15 @@
     {
         [SerializeField]
         private GameObject bullet;
-        private List<GameObject> activeBullets;
-        private List<GameObject> inactiveBullets;
+        private List<Bullet> activeBullets;
+        private List<Bullet> inactiveBullets;
         [HideInInspector]
         public bool isInitialized = false;
 
         public void Initialize(int numMaxObject)
         {
-            activeBullets = new List<GameObject>();
-            inactiveBullets = new List<GameObject>();
+            activeBullets = new List<Bullet>();
+            inactiveBullets = new List<Bullet>();
             StartCoroutine(InitializeCoroutine(numMaxObject));
         }
         public IEnumerator InitializeCoroutine(int numMaxObject)
@@ -25,18 +25,18 @@
 
             for (int i = 0; i < numMaxObject; i++)
             {
-                GameObject newBullet = Instantiate(bullet, Vector3.zero, Quaternion.identity, transform);
-                newBullet.GetComponent<Bullet>().bulletPool = this;
+                Bullet newBullet = Instantiate(bullet, Vector3.zero, Quaternion.identity, transform).GetComponent<Bullet>();
+                newBullet.bulletPool = this;
                 inactiveBullets.Add(newBullet);
-                newBullet.SetActive(false);
+                newBullet.gameObject.SetActive(false);
                 yield return new WaitForFixedUpdate();
             }
             isInitialized = true;
         }
 
-        public GameObject GetObject()
+        public Bullet GetObject()
         {
-            GameObject newBullet;
+            Bullet newBullet;
             if (inactiveBullets.Count > 0)
             {
                 newBullet = inactiveBullets[0];
@@ -45,30 +45,30 @@
             }
             else
             {
-                newBullet = Instantiate(bullet, Vector3.zero, Quaternion.identity, transform);
-                newBullet.GetComponent<Bullet>().bulletPool = this;
+                newBullet = Instantiate(bullet, Vector3.zero, Quaternion.identity, transform).GetComponent<Bullet>();
+                newBullet.bulletPool = this;
                 activeBullets.Add(newBullet);
             }
-            newBullet.SetActive(true);
+            newBullet.gameObject.SetActive(true);
             return newBullet;
         }
 
-        public void GetBackObject(GameObject bullet)
+        public void GetBackObject(Bullet bullet)
         {
 
             if (activeBullets.Contains(bullet))
             {
                 activeBullets.Remove(bullet);
                 inactiveBullets.Add(bullet);
-                bullet.SetActive(false);
+                bullet.gameObject.SetActive(false);
             }
         }
 
         public void DestroyAllBullet()
         {
-            foreach (GameObject bullet in activeBullets)
+            foreach (Bullet bullet in activeBullets)
             {
-                bullet.SetActive(false);
+                bullet.gameObject.SetActive(false);
                 inactiveBullets.Add(bullet);
             }
             activeBullets.Clear();
