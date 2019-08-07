@@ -6,7 +6,7 @@
 
     public class EnemyManager : MonoBehaviour
     {
-        public GameObject enemyObject;
+        public GameObject[] enemyObjects;
         private BulletManager bulletManager;
         private float lastEnemySpawnedTime;
         public void Initialize()
@@ -25,7 +25,9 @@
             else
             {
                 lastEnemySpawnedTime = Time.time;
-                GameObject enemy = Instantiate(enemyObject, new Vector3(Random.Range(-2f,2f), 2, 0), Quaternion.identity, transform);
+                GameObject enemy;
+                if(Random.Range(1,4)<2) enemy = Instantiate(enemyObjects[1], new Vector3(0, 2, 0), Quaternion.identity, transform);
+                else enemy = Instantiate(enemyObjects[0], new Vector3(Random.Range(-2f,2f), 2, 0), Quaternion.identity, transform);
                 enemy.GetComponent<Enemy>().bulletManager = bulletManager;
             }
         }

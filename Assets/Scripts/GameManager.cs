@@ -17,9 +17,21 @@
             shift = _shift;
             space = _space;
         }
+
+        public override string ToString()
+        {
+            return string.Format(
+                "UP:{0,6}, DOWN:{1,6}, RIGHT:{2,6}\nLEFT:{3,6}, SHIFT:{4,6}, SPACE:,{5,6}",
+                up.ToString(), down.ToString(), right.ToString(), left.ToString(), shift.ToString(), space.ToString());
+        }
     };
 
-    public delegate Vector3 Movement();
+    public enum ControlMode
+    {
+        GroundGyro,
+        GroundTouch,
+        AirGyro
+    };
 
     public class GameManager : MonoBehaviour
     {
@@ -31,6 +43,7 @@
         private float lastUIUpdate;
         [SerializeField]
         private float sensitivity;
+        private KeyDowns keyDowns;
         void Awake()
         {
             int width = Screen.width;
@@ -46,31 +59,29 @@
             lastUIUpdate = float.MinValue;
 
             InitializeComponents();
-            StartCoroutine(Makebullets());
         }
 
-        // Update is called once per frame
         void Update()
         {
             // input 처리
-            KeyDowns keyDowns = GetKeyDowns();
+            keyDowns = GetKeyDowns();
 
-            // bullet 생성
-            //if (keyDowns.space) Makebullets();
-
-            // player 이동
+            // 플레이어 이동
             MovePlayer(keyDowns);
 
+            // 게임오버 처리
             if (IsGameOver())
             {
-                // gameOver 처리
                 player.ResetPostion();
                 bulletManager.DestroyAllBullet();
+                foreach(Enemy enemy in FindObjectsOfType<Enemy>())
+                {
+                    enemy.StopAllCoroutines();
+                    Destroy(enemy.gameObject);
+                }
             }
 
             SetUIs();
-
-            
         }
 
         void InitializeComponents()
@@ -92,19 +103,13 @@
             return bulletManager.isBulletInPosition(playerPosition);
         }
 
-        private IEnumerator Makebullets()
-        {
-            bulletManager.ChangeBulletSprite(0);
-            bulletManager.MakeBullet(new Vector3(-3,player.transform.localPosition.y,0),Vector3.right,2);
-            yield return new WaitForSeconds(1.0f);
-        }
-
         private void SetUIs()
         {
-            if(Time.time < lastUIUpdate + UI_UPDATE_FREQENCY) return;
+            if (Time.time < lastUIUpdate + UI_UPDATE_FREQENCY) return;
             else lastUIUpdate = Time.time;
             uiManager.SetText("FPS", "FPS: " + ((int)(1f / Time.deltaTime)).ToString("##"));
             uiManager.SetText("Debug", Input.acceleration.ToString());
+            uiManager.SetText("Log", keyDowns.ToString());
         }
 
         private KeyDowns GetKeyDowns()
@@ -116,7 +121,7 @@
             right = Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) || Input.acceleration.x > sensitivity;
             left = Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || Input.acceleration.x < -sensitivity;
             shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || Input.GetKey(KeyCode.Mouse0);
-            space = Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Mouse0);
+            space = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.Mouse0);
 
             KeyDowns keyDowns = new KeyDowns(up, down, right, left, shift, space);
             return keyDowns;
