@@ -36,6 +36,7 @@
     public class GameManager : MonoBehaviour
     {
         public Player player;
+        public Magician magician;
         public BulletManager bulletManager;
         public EnemyManager enemyManager;
         public UIManager uiManager;
@@ -47,12 +48,13 @@
         void Awake()
         {
             int width = Screen.width;
-            Screen.SetResolution(width, (int)(width / 9f * 16f), true);
+            Screen.SetResolution(width, (int)(width / 16f * 9f), true);
         }
 
         void Start()
         {
             player = FindObjectOfType<Player>();
+            magician = FindObjectOfType<Magician>();
             bulletManager = FindObjectOfType<BulletManager>();
             enemyManager = FindObjectOfType<EnemyManager>();
             uiManager = FindObjectOfType<UIManager>();
@@ -70,26 +72,29 @@
             MovePlayer(keyDowns);
 
             // 게임오버 처리
-            if (IsGameOver())
-            {
-                player.ResetPostion();
-                bulletManager.DestroyAllBullet();
-                foreach(Enemy enemy in FindObjectsOfType<Enemy>())
-                {
-                    enemy.StopAllCoroutines();
-                    Destroy(enemy.gameObject);
-                }
-            }
+            if (IsGameOver()) Gameover();
 
+            // UI 설정
             SetUIs();
         }
-
+        void Gameover()
+        {
+            player.ResetPostion();
+            magician.Reset();
+            bulletManager.DestroyAllBullet();
+            foreach (Enemy enemy in FindObjectsOfType<Enemy>())
+            {
+                enemy.StopAllCoroutines();
+                Destroy(enemy.gameObject);
+            }
+        }
         void InitializeComponents()
         {
             player.Initialize();
             bulletManager.Initialize();
             enemyManager.Initialize();
             uiManager.Initialize();
+            magician.Initialize();
         }
 
         private void MovePlayer(KeyDowns keys)
