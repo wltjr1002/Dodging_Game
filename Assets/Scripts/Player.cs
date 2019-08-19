@@ -50,7 +50,6 @@
             // 플레이어와 화면의 크기 계산
             playerSize = sprite.rect.size / sprite.pixelsPerUnit;
             screenSize = camera.ViewportToWorldPoint(new Vector3(1, 0.9f, 0));
-            Debug.Log(playerSize.ToString() + screenSize.ToString());
             // 플레이어 초기 위치 설정
             InitialPosition = new Vector3(0, playerSize.y - screenSize.y, 0);
             transform.localPosition = InitialPosition;

@@ -51,8 +51,7 @@
         }
         public void RandomPattern()
         {
-            Debug.Log("BOOK INIT");
-            switch (Random.Range(0, 3))
+            switch (Random.Range(0, 4))
             {
                 case 0:
                     {
@@ -69,6 +68,11 @@
                         Pattern("Rush");
                         break;
                     }
+                case 3:
+                    {
+                        Pattern("Beam");
+                        break;
+                    }
                 default: break;
             }
         }
@@ -76,7 +80,6 @@
         {
             Camera camera = FindObjectOfType<Camera>();
             transform.position = new Vector3(Random.Range(-1*cameraRect.x, cameraRect.x),transform.position.y,0);
-            bulletManager.ChangeBulletSprite((int)bulletType);
             switch (bulletType)
             {
                 case BulletType.Linear:
@@ -84,13 +87,13 @@
                         //bulletManager.MakeCircleBullet(transform.localPosition, 0.1f, 12, angleOffset, 0, 360, 2, bulletType);
                         break;
                     }
-                case BulletType.Homing:
+                case BulletType.Delay:
                 case BulletType.Random:
                     {
                         for (int i = 0; i < 10; i++)
                         {
-                            bulletManager.ChangeBulletSprite(1);
-                            bulletManager.MakeCircleBullet(transform.position, 0.1f, 20, 1, bulletType);
+                            bulletManager.SetBulletProperty(bulletType, 1, transform.position, Vector3.zero, 1);
+                            bulletManager.MakeCircleBullet(0, 20);
                             yield return new WaitForSeconds(0.4f);
                         }
                         break;
@@ -118,8 +121,8 @@
             {
                 yield return new WaitForSeconds(0.05f);
                 Vector3 direction = new Vector3(Mathf.Cos(theta), Mathf.Sin(theta), 0);
-                bulletManager.ChangeBulletSprite(2);
-                bulletManager.MakeBullet(transform.position, direction, 1, bulletType);
+                bulletManager.SetBulletProperty(bulletType, 2, transform.position, direction, 1);
+                bulletManager.MakeBullet();
                 transform.localPosition += Vector3.down * Time.deltaTime;
                 theta += dtheta * 2;
             }
@@ -133,13 +136,36 @@
             int mark = Random.Range(0,2)*2-1;
             Vector3 playerPosition = FindObjectOfType<Player>().transform.position;
             Vector3 selfPosition = Vector3.Scale(cameraRect, new Vector3(0.9f*mark, 0.5f, 0));
+            Vector3 direction = playerPosition - selfPosition;
             transform.position = selfPosition;
             yield return new WaitForSeconds(0.5f);
             for (int i = 0; i < 10; i++)
             {
-                bulletManager.ChangeBulletSprite(0);
-                bulletManager.MakeBullet(selfPosition, playerPosition - selfPosition, 3 + (i + 1) * 0.5f);
+                bulletManager.SetBulletProperty(BulletType.Linear, 0, selfPosition, direction, 3 + (i + 1) * 0.5f);
+                bulletManager.MakeBullet();
                 yield return new WaitForSeconds(0.05f);
+            }
+            yield return new WaitForSeconds(3);
+            ResetPosition();
+            isIdle = true;
+        }
+
+        public IEnumerator Beam()
+        {
+            float numBullets = 30;
+            float delay = 0.03f;
+            Vector3 selfPosition = new Vector3(Random.Range(-1*cameraRect.x, cameraRect.x),transform.position.y,0);
+            Vector3 targetPosition = new Vector3(Random.Range(-1*cameraRect.x, cameraRect.x),cameraRect.y,0);
+            Vector3 direction = targetPosition - selfPosition;
+            transform.position = selfPosition;
+            yield return new WaitForSeconds(0.5f);
+            for (int i = 0; i < numBullets; i++)
+            {
+                float angle = Random.Range(0f,2*Mathf.PI);
+                Vector3 randomDirection = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0);
+                bulletManager.SetBulletProperty(BulletType.Delay, 3, selfPosition + direction * (i/numBullets), randomDirection, 1);
+                bulletManager.MakeBullet(delay * numBullets + 1 - i * delay);
+                yield return new WaitForSeconds(delay);
             }
             yield return new WaitForSeconds(3);
             ResetPosition();

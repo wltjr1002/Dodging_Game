@@ -31,7 +31,6 @@
                 book.Initialize();
             }
             Reset();
-            Debug.Log(bookList);
         }
         public void Reset()
         {
