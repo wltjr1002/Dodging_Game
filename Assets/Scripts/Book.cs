@@ -7,7 +7,7 @@
     public class Book : MonoBehaviour
     {
         private BulletManager bulletManager;
-        private Vector3 initialPosition;
+        public Vector3 initialPosition;
         private Vector3 cameraRect;
         public bool isIdle;
         public void Initialize()
@@ -19,26 +19,19 @@
 
             isIdle = true;
         }
+        public void Update()
+        {
+            if(isIdle) ResetPosition();
+        }
         public void Reset()
         {
             StopAllCoroutines();
             ResetPosition();
             isIdle = true;
         }
-        public void Reset(Vector3 position)
-        {
-            StopAllCoroutines();
-            ResetPosition(position);
-            isIdle = true;
-        }
         public void ResetPosition()
         {
             transform.localPosition = initialPosition;
-        }
-        public void ResetPosition(Vector3 position)
-        {
-            transform.localPosition = position;
-            initialPosition = position;
         }
         public void Pattern(string name)
         {
@@ -58,6 +51,7 @@
         }
         public void RandomPattern()
         {
+            Debug.Log("BOOK INIT");
             switch (Random.Range(0, 3))
             {
                 case 0:
@@ -80,6 +74,8 @@
         }
         public IEnumerator Spread(BulletType bulletType)
         {
+            Camera camera = FindObjectOfType<Camera>();
+            transform.position = new Vector3(Random.Range(-1*cameraRect.x, cameraRect.x),transform.position.y,0);
             bulletManager.ChangeBulletSprite((int)bulletType);
             switch (bulletType)
             {
@@ -94,8 +90,8 @@
                         for (int i = 0; i < 10; i++)
                         {
                             bulletManager.ChangeBulletSprite(1);
-                            bulletManager.MakeCircleBullet(transform.position, 0.1f, 10, 3, bulletType);
-                            yield return new WaitForSeconds(0.2f);
+                            bulletManager.MakeCircleBullet(transform.position, 0.1f, 20, 1, bulletType);
+                            yield return new WaitForSeconds(0.4f);
                         }
                         break;
                     }
@@ -106,7 +102,7 @@
                         break;
                     }
             }
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(3);
             isIdle = true;
         }
 
@@ -117,18 +113,18 @@
             int dtheta = Random.Range(0,2)*2-1;
             Camera camera = FindObjectOfType<Camera>();
             float minY = cameraRect.y;
-            while (transform.position.y > minY)
+            transform.position = new Vector3(Random.Range(-1*cameraRect.x, cameraRect.x),transform.position.y,0);
+            while (transform.position.y > minY - 0.5)
             {
-                yield return null;
+                yield return new WaitForSeconds(0.05f);
                 Vector3 direction = new Vector3(Mathf.Cos(theta), Mathf.Sin(theta), 0);
                 bulletManager.ChangeBulletSprite(2);
                 bulletManager.MakeBullet(transform.position, direction, 1, bulletType);
-                transform.localPosition += Vector3.down * Time.deltaTime * 3;
-                theta += dtheta;
+                transform.localPosition += Vector3.down * Time.deltaTime;
+                theta += dtheta * 2;
             }
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(3);
             ResetPosition();
-            yield return new WaitForSeconds(1);
             isIdle = true;
         }
 
@@ -142,12 +138,11 @@
             for (int i = 0; i < 10; i++)
             {
                 bulletManager.ChangeBulletSprite(0);
-                bulletManager.MakeBullet(selfPosition, playerPosition - selfPosition, 2 + (i + 1) * 0.5f);
+                bulletManager.MakeBullet(selfPosition, playerPosition - selfPosition, 3 + (i + 1) * 0.5f);
                 yield return new WaitForSeconds(0.05f);
             }
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(3);
             ResetPosition();
-            yield return new WaitForSeconds(1);
             isIdle = true;
         }
 

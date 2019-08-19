@@ -18,20 +18,20 @@
             lastEnemySpawnedTime = float.MinValue;
         }
 
-        // Update is called once per frame
         void Update()
         {
-            /*
-            if(Time.time < lastEnemySpawnedTime + 2f) return;
-            else
-            {
-                lastEnemySpawnedTime = Time.time;
-                GameObject enemy;
-                if(Random.Range(1,4)<2) enemy = Instantiate(enemyObjects[1], new Vector3(0, 2, 0), Quaternion.identity, transform);
-                else enemy = Instantiate(enemyObjects[0], new Vector3(Random.Range(-2f,2f), 2, 0), Quaternion.identity, transform);
-                enemy.GetComponent<Enemy>().bulletManager = bulletManager;
-            }
-            */
+            
+        }
+
+        public void SpawnEnemy(GameObject enemy, float delay)
+        {
+            StartCoroutine(SpawnEnemyCorutine(enemy,delay));
+        }
+        public IEnumerator SpawnEnemyCorutine(GameObject enemy, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            Instantiate(enemy, enemy.transform.position, Quaternion.identity);
+            enemy.GetComponent<Enemy>().Initialize();
         }
     }
 }

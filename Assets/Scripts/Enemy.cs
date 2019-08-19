@@ -7,11 +7,7 @@
     public class Enemy : MonoBehaviour
     {
         public BulletManager bulletManager;
-        // Start is called before the first frame update
-        void Start()
-        {
-            StartCoroutine(MainCorutine());
-        }
+        public virtual void Initialize(){}
         void ShootBullet(BulletType bulletType, float angleOffset)
         {
             bulletManager.ChangeBulletSprite((int)bulletType);

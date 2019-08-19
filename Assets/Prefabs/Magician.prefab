@@ -69,7 +69,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 69d793f1d55824c679b5ad7cf959bff4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -112,6 +112,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f21fb16c56bc499a877504c4ea16e69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  initialPosition: {x: 0, y: 0, z: 0}
   isIdle: 0
 --- !u!1 &8877030045740074209
 GameObject:
@@ -182,7 +183,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: e13ab2cd8463e44bb92df42153c0d43f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -225,6 +226,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f21fb16c56bc499a877504c4ea16e69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  initialPosition: {x: 0, y: 0, z: 0}
   isIdle: 0
 --- !u!1 &8877030046295198772
 GameObject:
@@ -253,7 +255,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8877030046295198772}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1.6, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children:
   - {fileID: 8877030045740074210}
@@ -341,9 +343,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c5e61c65791f4fa89f90644880a8048, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bulletManager: {fileID: 0}
   book_left: {fileID: 6622220392326193634}
   book_center: {fileID: 6611177657798418392}
   book_right: {fileID: 7601450341967406463}
+  hp: 0
 --- !u!1 &8877030046430474420
 GameObject:
   m_ObjectHideFlags: 0
@@ -413,7 +417,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: be766d183f4814d09be15599c4fd4cfa, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -456,4 +460,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f21fb16c56bc499a877504c4ea16e69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  initialPosition: {x: 0, y: 0, z: 0}
   isIdle: 0

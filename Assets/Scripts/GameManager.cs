@@ -30,21 +30,29 @@
     {
         GroundGyro,
         GroundTouch,
-        AirGyro
+        Buttons
     };
 
     public class GameManager : MonoBehaviour
     {
         public Player player;
-        public Magician magician;
+        public GameObject magician;
         public BulletManager bulletManager;
         public EnemyManager enemyManager;
+
+
+        #region UI
         public UIManager uiManager;
         private const float UI_UPDATE_FREQENCY = 0.2f;
         private float lastUIUpdate;
+        #endregion
+
+        #region Control
+        public ControlMode controlMode;
         [SerializeField]
         private float sensitivity;
         private KeyDowns keyDowns;
+        #endregion
         void Awake()
         {
             int width = Screen.width;
@@ -54,12 +62,11 @@
         void Start()
         {
             player = FindObjectOfType<Player>();
-            magician = FindObjectOfType<Magician>();
             bulletManager = FindObjectOfType<BulletManager>();
             enemyManager = FindObjectOfType<EnemyManager>();
             uiManager = FindObjectOfType<UIManager>();
             lastUIUpdate = float.MinValue;
-
+            enemyManager.SpawnEnemy(magician, 3);
             InitializeComponents();
         }
 
@@ -69,7 +76,7 @@
             keyDowns = GetKeyDowns();
 
             // 플레이어 이동
-            MovePlayer(keyDowns);
+            player.Move(keyDowns);
 
             // 게임오버 처리
             if (IsGameOver()) Gameover();
@@ -80,13 +87,14 @@
         void Gameover()
         {
             player.ResetPostion();
-            magician.Reset();
-            bulletManager.DestroyAllBullet();
+            enemyManager.StopAllCoroutines();
             foreach (Enemy enemy in FindObjectsOfType<Enemy>())
             {
                 enemy.StopAllCoroutines();
                 Destroy(enemy.gameObject);
             }
+            bulletManager.DestroyAllBullet();
+            enemyManager.SpawnEnemy(magician, 3);
         }
         void InitializeComponents()
         {
@@ -94,16 +102,10 @@
             bulletManager.Initialize();
             enemyManager.Initialize();
             uiManager.Initialize();
-            magician.Initialize();
         }
-
-        private void MovePlayer(KeyDowns keys)
-        {
-            player.Move(keys);
-        }
-
         private bool IsGameOver()
         {
+            if(player.isDashing) return false;
             Vector3 playerPosition = player.transform.localPosition;
             return bulletManager.isBulletInPosition(playerPosition);
         }
@@ -116,20 +118,45 @@
             uiManager.SetText("Debug", Input.acceleration.ToString());
             uiManager.SetText("Log", keyDowns.ToString());
         }
-
         private KeyDowns GetKeyDowns()
         {
             bool up, down, right, left, shift, space;
-
-            up = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.acceleration.y > sensitivity;
-            down = Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow) || Input.acceleration.y < -sensitivity;
-            right = Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) || Input.acceleration.x > sensitivity;
-            left = Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || Input.acceleration.x < -sensitivity;
-            shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || Input.GetKey(KeyCode.Mouse0);
-            space = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.Mouse0);
+            switch (controlMode)
+            {
+                case ControlMode.GroundGyro:
+                    {
+                        up = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.acceleration.y > sensitivity;
+                        down = Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow) || Input.acceleration.y < -sensitivity;
+                        right = Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) || Input.acceleration.x > sensitivity;
+                        left = Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || Input.acceleration.x < -sensitivity;
+                        shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || Input.GetKey(KeyCode.Mouse0);
+                        space = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.Mouse0);
+                        break;
+                    }
+                case ControlMode.GroundTouch:
+                    {
+                        up = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.acceleration.y > sensitivity;
+                        down = Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow) || Input.acceleration.y < -sensitivity;
+                        right = Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) || Input.acceleration.x > sensitivity;
+                        left = Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || Input.acceleration.x < -sensitivity;
+                        shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || Input.GetKey(KeyCode.Mouse0);
+                        space = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.Mouse0);
+                        break;
+                    }
+                case ControlMode.Buttons:
+                    {
+                        return uiManager.GetButtonStates();
+                    }
+                default:
+                    {
+                        up = false; down = false; right = false; left = false; shift = false; space = false;
+                        break;
+                    }
+            }
 
             KeyDowns keyDowns = new KeyDowns(up, down, right, left, shift, space);
             return keyDowns;
         }
+    
     }
 }

@@ -15,12 +15,31 @@
         private Vector2 playerSize;
         private Vector2 screenSize;
 
+        private bool isJumpEnabled;
+        private bool isDashEnabled;
+        private bool isBombEnabled;
+
         #region Jump
         public float jumpDuration;
         public float jumpSpeed;
         private const int MAXJUMP = 2;
         private int jumpState; // 0: Ground, 1: Ascending, 2: Timeout Decending, 3: Decending
         private float jumpStartTime;
+        #endregion
+
+        #region Dash
+        [HideInInspector]
+        public bool isDashing;
+        [SerializeField]
+        private float dashTime;
+        [SerializeField]
+        private float dashCooldown;
+        private float dashTimeRemain;
+        private float dashCooldownRemain;
+        #endregion
+
+        #region Bomb
+        private float bombCooldown;
         #endregion
 
         public void Initialize()
@@ -30,7 +49,7 @@
 
             // 플레이어와 화면의 크기 계산
             playerSize = sprite.rect.size / sprite.pixelsPerUnit;
-            screenSize = camera.ViewportToWorldPoint(new Vector3(1, 1, 0));
+            screenSize = camera.ViewportToWorldPoint(new Vector3(1, 0.9f, 0));
             Debug.Log(playerSize.ToString() + screenSize.ToString());
             // 플레이어 초기 위치 설정
             InitialPosition = new Vector3(0, playerSize.y - screenSize.y, 0);
@@ -39,129 +58,167 @@
 
             // 플레이어 피격포인트 스프라이트 ON/OFF
             hitPoint.SetActive(false);
-        }
 
-        public void Move(KeyDowns keys)
-        {
-            // 점프 관련 계산
-            bool space = keys.space;
-            bool ground = GroundCheck();
-            bool timeout = Time.time > jumpStartTime + jumpDuration;
-            int prevstate = jumpState;
-            switch (jumpState % 4)
-            {
-                case 0: // Ground
-                    {
-                        if (space)
-                        {
-                            jumpState = 1;
-                            jumpStartTime = Time.time;
-                        }
-                        break;
-                    }
-                case 1: // Ascending
-                    {
-                        if (!space)
-                        {
-                            jumpState += 2;
-                            jumpStartTime = Time.time;
-                        }
-                        else if (timeout)
-                        {
-                            jumpState += 1;
-                            jumpStartTime = Time.time;
-                        }
-                        break;
-                    }
-                case 2: // Timeout Decending
-                    {
-                        if (!space) { jumpState += 1; }
-                        else if (ground) { jumpState = 0; }
-                        break;
-                    }
-                case 3: // Decending
-                    {
-                        if (space && (jumpState + 1) / 4 < MAXJUMP)
-                        {
-                            jumpState += 2;
-                            jumpStartTime = Time.time;
-                        }
-                        else if (ground) { jumpState = 0; }
-                        break;
-                    }
-                default: break;
-            }
-            //if (jumpState != prevstate) Debug.Log(space.ToString() + jumpState);
-
-
-            // 기본상수 계산
-            int dirX = (keys.right == keys.left) ? 0 : (keys.right ? 1 : -1);
-            int dirY = (keys.up == keys.down) ? 0 : (keys.up ? 1 : -1);
-            float curVelocity = keys.shift ? (speed * 0.5f) : speed;
-            float dt = Time.deltaTime;
-            float ds = curVelocity * dt;
-
-            // 움직임 벡터 계산
-            Vector3 dsVector;
+            // 컨트롤모드에 따른 점프/대쉬 기능 활성화
             switch (controlMode)
             {
                 case ControlMode.GroundGyro:
                     {
-                        float vRatio;
-                        if (jumpState % 4 == 0)
-                        {
-                            dirY = 0;
-                            vRatio = 0;
-                        }
-                        else if (jumpState % 4 == 1)
-                        {
-                            dirY = 1;
-                            vRatio = 1f - (Time.time - jumpStartTime) / jumpDuration;
-                        }
-                        else if (jumpState % 4 == 2)
-                        {
-                            dirY = -1;
-                            vRatio = Mathf.Min((Time.time - jumpStartTime) / jumpDuration * 2, 1f);
-                        }
-                        else
-                        {
-                            dirY = -1;
-                            vRatio = Mathf.Min((Time.time - jumpStartTime) / jumpDuration * 2, 1f);
-                        }
-
-                        dsVector = new Vector3(dirX * dt * curVelocity, dirY * dt * curVelocity * vRatio * jumpSpeed, 0);
+                        isJumpEnabled = true;
+                        isDashEnabled = false;
+                        isBombEnabled = false;
                         break;
                     }
                 case ControlMode.GroundTouch:
                     {
-                        dsVector = new Vector3(dirX * dt * curVelocity, dirY * dt * curVelocity, 0);
+                        isJumpEnabled = true;
+                        isDashEnabled = false;
+                        isBombEnabled = false;
                         break;
                     }
-                case ControlMode.AirGyro:
+                case ControlMode.Buttons:
                     {
-                        dsVector = new Vector3(dirX * dt * curVelocity, dirY * dt * curVelocity, 0);
+                        isJumpEnabled = true;
+                        isDashEnabled = true;
+                        isBombEnabled = false;
                         break;
                     }
-                default:
-                    {
-                        dsVector = new Vector3(dirX * dt * curVelocity, dirY * dt * curVelocity, 0);
-                        break;
-                    }
+                default: break;
             }
+
+        }
+
+        public void Move(KeyDowns keys)
+        {
+            // 기본상수 계산
+            float velocity = speed;
+            float vFactor_X = (keys.right == keys.left) ? 0 : (keys.right ? 1 : -1);
+            float vFactor_Y = (keys.up == keys.down) ? 0 : (keys.up ? 1 : -1);
+            float deltaTime = Time.deltaTime;
+
+            if (isJumpEnabled)// 점프 관련 계산
+            {
+                bool space = keys.space;
+                bool ground = GroundCheck();
+                bool timeout = Time.time > jumpStartTime + jumpDuration;
+                int prevstate = jumpState;
+
+                // JumpState 변경
+                switch (jumpState % 4)
+                {
+                    case 0: // Ground
+                        {
+                            if (space)
+                            {
+                                jumpState = 1;
+                                jumpStartTime = Time.time;
+                            }
+                            break;
+                        }
+                    case 1: // Ascending
+                        {
+                            if (!space)
+                            {
+                                jumpState += 2;
+                                jumpStartTime = Time.time;
+                            }
+                            else if (timeout)
+                            {
+                                jumpState += 1;
+                                jumpStartTime = Time.time;
+                            }
+                            break;
+                        }
+                    case 2: // Timeout Decending
+                        {
+                            if (!space) { jumpState += 1; }
+                            else if (ground) { jumpState = 0; }
+                            break;
+                        }
+                    case 3: // Decending
+                        {
+                            if (space && (jumpState + 1) / 4 < MAXJUMP)
+                            {
+                                jumpState += 2;
+                                jumpStartTime = Time.time;
+                            }
+                            else if (ground) { jumpState = 0; }
+                            break;
+                        }
+                    default: break;
+                }
+                // JumpState 변경에 따른 상수 계산
+                switch (jumpState % 4)
+                {
+                    case 0: // Ground
+                        {
+                            vFactor_Y = 0;
+                            break;
+                        }
+                    case 1: // Ascending
+                        {
+                            vFactor_Y = 1f - (Time.time - jumpStartTime) / jumpDuration;
+                            break;
+                        }
+                    case 2: // Timeout Decending
+                        {
+                            vFactor_Y = -1 * Mathf.Min((Time.time - jumpStartTime) / jumpDuration * 2, 1f);
+                            break;
+                        }
+                    case 3: // Decending
+                        {
+                            vFactor_Y = -1 * Mathf.Min((Time.time - jumpStartTime) / jumpDuration * 2, 1f);
+                            break;
+                        }
+                    default: break;
+                }
+                vFactor_Y *= jumpSpeed;
+            }
+            if (isDashEnabled)// 대쉬 관련 계산
+            {
+                bool shift = keys.shift;
+                if (shift)
+                {
+                    if (isDashing) //대쉬계속
+                    {
+                        dashTimeRemain -= deltaTime;
+                        if (dashTimeRemain < 0) // 지속시간 끝나면 대쉬종료
+                        {
+                            isDashing = false;
+                            dashTimeRemain = 0;
+                            dashCooldownRemain = dashCooldown;
+                        }
+                    }
+                    else if (dashCooldownRemain == 0) // 대쉬 시작
+                    {
+                        dashTimeRemain = dashTime;
+                        isDashing = true;
+                    }
+                }
+                else if (isDashing) //대쉬종료
+                {
+                    isDashing = false;
+                    dashTimeRemain = 0;
+                    dashCooldownRemain = dashCooldown;
+                }
+                // 쿨다운
+                if (dashCooldownRemain > 0) dashCooldownRemain = Mathf.Max(0f, dashCooldownRemain - deltaTime);
+                if (isDashing) vFactor_X *= 2;
+            }
+
+            // 움직임 벡터 계산
+            Vector3 dsVector;
+            dsVector = new Vector3(vFactor_X * deltaTime * velocity, vFactor_Y * deltaTime * velocity, 0);
 
             // 스프라이트 조정
             SpriteRenderer sprite = GetComponent<SpriteRenderer>();
-            sprite.flipX = dirX < 0;
+            sprite.flipX = vFactor_X < 0;
+            sprite.color = isDashing ? new Color(1, 1, 1, 0.5f) : Color.white;
             Animator animator = GetComponent<Animator>();
-            if (dirY == 0)
-            {
-                if (dirX == 0) animator.Play("Stop");
-                else animator.Play("Walk");
-            }
-            else if(dirY == 1)
-            {
-                animator.Play("Jump");
-            }
+            
+            if (vFactor_Y == 0 && vFactor_X == 0) animator.Play("Stop");
+            else if (vFactor_Y == 0 && vFactor_X != 0) animator.Play("Walk");
+            else if (vFactor_Y > 0) animator.Play("Jump");
             else animator.Play("Fall");
 
 

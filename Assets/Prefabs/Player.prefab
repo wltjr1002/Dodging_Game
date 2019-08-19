@@ -95,10 +95,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hitPoint: {fileID: 8148494125892568652}
-  speed: 2
-  controlMode: 0
-  jumpDuration: 0.3
-  jumpSpeed: 2
+  speed: 1.5
+  controlMode: 2
+  jumpDuration: 0.4
+  jumpSpeed: 3
+  isDashing: 0
+  dashTime: 1
+  dashCooldown: 10
 --- !u!95 &259874340531237974
 Animator:
   serializedVersion: 3
