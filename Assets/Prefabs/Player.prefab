@@ -98,7 +98,7 @@ MonoBehaviour:
   speed: 1.5
   controlMode: 2
   jumpDuration: 0.4
-  jumpSpeed: 3
+  jumpSpeed: 2
   isDashing: 0
   dashTime: 1
   dashCooldown: 10

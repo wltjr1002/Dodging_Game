@@ -83,7 +83,7 @@
 
             // 총알이 밖으로 나가면 삭제
             Vector3 position = transform.localPosition;
-            if (Mathf.Abs(position.x) > 5 || Mathf.Abs(position.y) > 10)
+            if (Mathf.Abs(position.x) > 6 || Mathf.Abs(position.y) > 10)
             {
                 try
                 {

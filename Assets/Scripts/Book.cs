@@ -139,9 +139,9 @@
             Vector3 direction = playerPosition - selfPosition;
             transform.position = selfPosition;
             yield return new WaitForSeconds(0.5f);
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 3; i++)
             {
-                bulletManager.SetBulletProperty(BulletType.Linear, 0, selfPosition, direction, 3 + (i + 1) * 0.5f);
+                bulletManager.SetBulletProperty(BulletType.Linear, 0, selfPosition, direction, 3);
                 bulletManager.MakeBullet();
                 yield return new WaitForSeconds(0.05f);
             }
