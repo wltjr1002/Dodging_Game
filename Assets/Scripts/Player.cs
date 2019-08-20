@@ -49,7 +49,7 @@
 
             // 플레이어와 화면의 크기 계산
             playerSize = sprite.rect.size / sprite.pixelsPerUnit;
-            screenSize = camera.ViewportToWorldPoint(new Vector3(1, 0.9f, 0));
+            screenSize = camera.ViewportToWorldPoint(new Vector3(1, 1, 0));
             // 플레이어 초기 위치 설정
             InitialPosition = new Vector3(0, playerSize.y - screenSize.y, 0);
             transform.localPosition = InitialPosition;
@@ -61,14 +61,14 @@
             // 컨트롤모드에 따른 점프/대쉬 기능 활성화
             switch (controlMode)
             {
-                case ControlMode.GroundGyro:
+                case ControlMode.Gyro:
                     {
                         isJumpEnabled = true;
                         isDashEnabled = false;
                         isBombEnabled = false;
                         break;
                     }
-                case ControlMode.GroundTouch:
+                case ControlMode.Touch:
                     {
                         isJumpEnabled = true;
                         isDashEnabled = false;

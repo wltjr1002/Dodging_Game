@@ -43,6 +43,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 842fa1e2ee1504363a777d35eb7fce63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletManager: {fileID: 0}
   player: {fileID: 0}
+  magician: {fileID: 0}
+  bulletManager: {fileID: 0}
+  enemyManager: {fileID: 0}
   uiManager: {fileID: 0}
+  controlMode: 2
+  sensitivity: 0.07

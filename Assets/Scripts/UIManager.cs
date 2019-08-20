@@ -50,7 +50,6 @@
                 case 4: {keyDowns.shift = key>0; break;}
                 default: break;
             }
-            Debug.Log(keyDowns.ToString());
         }
         public KeyDowns GetButtonStates()
         {

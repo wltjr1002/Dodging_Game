@@ -28,8 +28,8 @@
 
     public enum ControlMode
     {
-        GroundGyro,
-        GroundTouch,
+        Gyro,
+        Touch,
         Buttons
     };
 
@@ -123,7 +123,7 @@
             bool up, down, right, left, shift, space;
             switch (controlMode)
             {
-                case ControlMode.GroundGyro:
+                case ControlMode.Gyro:
                     {
                         up = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.acceleration.y > sensitivity;
                         down = Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow) || Input.acceleration.y < -sensitivity;
@@ -133,7 +133,7 @@
                         space = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.Mouse0);
                         break;
                     }
-                case ControlMode.GroundTouch:
+                case ControlMode.Touch:
                     {
                         up = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.acceleration.y > sensitivity;
                         down = Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow) || Input.acceleration.y < -sensitivity;
