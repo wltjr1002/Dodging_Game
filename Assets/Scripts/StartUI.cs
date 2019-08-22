@@ -7,18 +7,17 @@
 
     public class StartUI : MonoBehaviour
     {
-        // Start is called before the first frame update
-        void Start()
-        {
+        GameObject howtoWindow;
 
+        public void OpenHowto()
+        {
+            howtoWindow.SetActive(true);
         }
 
-        // Update is called once per frame
-        void Update()
+        public void CloseHowto()
         {
-
+            howtoWindow.SetActive(false);
         }
-
         public void StartGame()
         {
             SceneManager.LoadScene("MainGame");

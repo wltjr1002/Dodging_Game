@@ -6,6 +6,7 @@
 
     public class Magician : Enemy
     {
+        public GameManager gameManager;
         [SerializeField]
         private Book book_left;
         [SerializeField]
@@ -21,6 +22,7 @@
         private const float oneThirdPi = Mathf.PI / 3;
         public void Start()
         {
+            gameManager = FindObjectOfType<GameManager>();
             bulletManager = FindObjectOfType<BulletManager>();
             bookList = new List<Book>();
             bookList.Add(book_left);
@@ -74,6 +76,7 @@
             {
                 yield return new WaitForSeconds(1.0f);
                 hp -= 1;
+                gameManager.uiManager.SetBossHP(hp);
             }
         }
     }

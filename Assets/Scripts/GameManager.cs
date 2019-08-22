@@ -48,7 +48,9 @@
         #endregion
 
         #region Control
-        public ControlMode controlMode;
+        [SerializeField]
+        private ControlMode controlMode;
+        private ControlMode defaultControlMode = ControlMode.Touch;
         [SerializeField]
         private float sensitivity;
         private KeyDowns keyDowns;
@@ -61,6 +63,9 @@
 
         void Start()
         {
+            GameOption option;
+            if((option = FindObjectOfType<GameOption>())!=null) controlMode = option.controlMode;
+            else controlMode = defaultControlMode;
             player = FindObjectOfType<Player>();
             bulletManager = FindObjectOfType<BulletManager>();
             enemyManager = FindObjectOfType<EnemyManager>();
@@ -101,7 +106,7 @@
             player.Initialize();
             bulletManager.Initialize();
             enemyManager.Initialize();
-            uiManager.Initialize();
+            uiManager.Initialize(controlMode);
         }
         private bool IsGameOver()
         {
@@ -135,13 +140,7 @@
                     }
                 case ControlMode.Touch:
                     {
-                        up = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.acceleration.y > sensitivity;
-                        down = Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow) || Input.acceleration.y < -sensitivity;
-                        right = Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) || Input.acceleration.x > sensitivity;
-                        left = Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || Input.acceleration.x < -sensitivity;
-                        shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || Input.GetKey(KeyCode.Mouse0);
-                        space = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.Mouse0);
-                        break;
+                        return uiManager.GetButtonStates();
                     }
                 case ControlMode.Buttons:
                     {
